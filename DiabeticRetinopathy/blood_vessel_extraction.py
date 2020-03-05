@@ -34,7 +34,7 @@ def extract_bv(image):
     # removing blobs of unwanted bigger chunks taking in consideration they are not straight lines like blood
     # vessels and also in an interval of area
     fundus_eroded = cv2.bitwise_not(newfin)
-    xmask = np.ones(fundus.shape[:2], dtype="uint8") * 255
+    xmask = np.ones(fundus_eroded.shape[:2], dtype="uint8") * 255
     xcontours, xhierarchy = cv2.findContours(fundus_eroded.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     for cnt in xcontours:
         shape = "unidentified"

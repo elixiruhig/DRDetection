@@ -1,6 +1,10 @@
+import base64
+
+import cv2
 from django.contrib.auth import login, logout
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+
 from DiabeticRetinopathy import blood_vessel_extraction
 
 from DiabeticRetinopathy import forms
