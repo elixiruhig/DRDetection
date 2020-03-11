@@ -1,13 +1,11 @@
 import base64
+from fastai.vision import *
 
-import cv2
+
 from django.contrib.auth import login, logout
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from DiabeticRetinopathy import blood_vessel_extraction
-
-from DiabeticRetinopathy import forms
 
 
 # Create your views here.
@@ -15,7 +13,9 @@ from DiabeticRetinopathy.forms import RegisterForm, LoginForm, ReportForm
 from DiabeticRetinopathy.models import Report
 
 
+
 def homeview(request):
+    global load_learner
     if request.user.is_authenticated:
         if request.method =='POST':
             form = ReportForm(request.POST, request.FILES)
@@ -23,7 +23,10 @@ def homeview(request):
                 report = form.save(commit=False)
                 report.save()
                 photo = Report.objects.latest('date').photo
-                return render(request,'DiabeticRetinopathy/report.html',{'photo':photo})
+
+                learn = load_learner('')
+                category = learn.predict(open_image(photo.path))[0]
+                return render(request,'DiabeticRetinopathy/report.html',{'photo':photo,'category':category})
         form = ReportForm()
         return render(request, 'DiabeticRetinopathy/homeview.html',{'form':form})
     return render(request,'DiabeticRetinopathy/homeview.html')
