@@ -1,18 +1,34 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+from DiabeticRetinopathy.models import User
 from django.db.models import Q
 from django.forms import TextInput, ModelForm
 from django import forms
 from DiabeticRetinopathy.models import Report
 
+GENDER_OPTIONS = (
+                ('Male','Male'),
+                ('Female','Female'),
+                )
 
 
 class RegisterForm(UserCreationForm):
     password1 = forms.CharField(label="Password",widget=forms.PasswordInput)
     password2 = forms.CharField(label="Confirm Password",widget=forms.PasswordInput)
 
-    name = forms.CharField(widget=TextInput(
+    first_name = forms.CharField(widget=TextInput(
+        attrs={
+            'class': 'form-control'
+        }
+    ))
+
+    last_name = forms.CharField(widget=TextInput(
+        attrs={
+            'class': 'form-control'
+        }
+    ))
+
+    oname = forms.CharField(widget=TextInput(
         attrs={
             'class': 'form-control'
         }
@@ -24,10 +40,17 @@ class RegisterForm(UserCreationForm):
         }
     ))
 
+    bdate = forms.DateField(label='bdate', widget=forms.DateInput(
+        attrs={
+            'class': 'form-control',
+            'type': 'date'
+        }
+    ))
+
 
     class Meta:
         model = get_user_model()
-        fields = ('name','email','username')
+        fields = ('first_name','last_name','oname','email','bdate')
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -61,6 +84,7 @@ class LoginForm(forms.Form):
             'class':'form-control'
         }
     ))
+
     password = forms.CharField(widget=forms.PasswordInput(
         attrs={
             'class':'form-control'
@@ -103,6 +127,12 @@ class ReportForm(forms.ModelForm):
             'class': 'form-control'
         }
     ))
+
+    gender = forms.ChoiceField(choices=GENDER_OPTIONS,required=True)
+
+
     class Meta:
         model = Report
-        fields = ('first_name','last_name','age','photo')
+        fields = ('first_name','last_name','age','gender','photo')
+
+
