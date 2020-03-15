@@ -9,22 +9,22 @@ class user_admin(UserAdmin):
 
     add_form = RegisterForm
 
-    list_display = ('username', 'user_id', 'email', 'staff','admin')
-    search_fields = ('username', 'user_id', 'email', 'staff','admin')
-    list_filter = ('username', 'user_id', 'email')
-    ordering = ('username',)
+    list_display = ('user_id','first_name','last_name','oname', 'email','bdate', 'staff','admin')
+    search_fields = ('user_id', 'email', 'staff','admin')
+    list_filter = ('user_id', 'email')
+    ordering = ('first_name',)
     filter_horizontal = ()
 
     fieldsets = (
-        (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('name','email')}),
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('first_name','last_name','oname','bdate')}),
         ('Permissions', {'fields': ('admin',)}),
     )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'password1', 'password2')}
+            'fields': ('email', 'password1', 'password2')}
          ),
     )
 

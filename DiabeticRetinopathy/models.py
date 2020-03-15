@@ -6,38 +6,51 @@ from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
 
 
+GENDER_OPTIONS = (
+                ('Male','Male'),
+                ('Female','Female'),
+                )
+
+
 class UserManager(BaseUserManager):
 
-    def create_user(self,username,email,password=None):
-        if not username:
-            raise ValueError("Please enter an username")
+    def create_user(self,email,password=None):
+        if not email:
+            raise ValueError("Please enter an email")
 
         user = self.model(
-            username = username
+            email = self.normalize_email(email),
         )
         user.set_password(password)
-        user.email = email
         user.save(using=self._db)
         return user
 
-    def create_superuser(self,username,email,password):
-        user = self.create_user(username,email, password=password)
+    def create_superuser(self,email,password):
+        user = self.create_user(email, password=password)
         user.admin = True
+        user.staff = True
+        user.host = True
+        user.save(using=self._db)
+        return user
+
+    def create_staff(self,email,password):
+        user = self.create_user(email,password=password)
         user.staff = True
         user.save(using=self._db)
         return user
 
-
 class User(AbstractBaseUser):
-    name = models.CharField(max_length=255, blank=False)
-    username = models.CharField(max_length=255, blank=False, unique=True)
+    first_name = models.CharField(max_length=255, blank=False)
+    last_name = models.CharField(max_length=255, blank=False,null=True)
+    oname = models.CharField(max_length=255, blank=False, null=True)
+    bdate = models.DateField(null=True)
     user_id = models.UUIDField(unique=True, default=uuid.uuid4)
     email = models.EmailField(max_length=255, unique=True)
     staff = models.BooleanField(default=False)
     admin = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
     objects = UserManager()
 
@@ -68,5 +81,6 @@ class Report(models.Model):
     first_name = models.CharField(max_length=255, blank=False, null=False)
     last_name = models.CharField(max_length=255, blank=False, null=False)
     age = models.PositiveIntegerField(blank=False, null=False)
+    gender = models.CharField(max_length=10,null = True, choices=GENDER_OPTIONS)
     date = models.DateTimeField(default=datetime.now())
     photo = models.ImageField(upload_to='fundus_images',null=True)
